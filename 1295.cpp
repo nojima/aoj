@@ -3,8 +3,6 @@
 #include <cstdlib>
 #include <cassert>
 #include <algorithm>
-#include <iostream>
-#include <vector>
 using namespace std;
 
 #define LET(name, value) __typeof(value) name = value
@@ -15,4 +13,13 @@ using namespace std;
 #define FOREACH(i, c) for (LET(i, (c).begin()); i != (c).end(); ++i)
 
 int main() {
+  int w, d;
+  while (scanf("%d%d", &w, &d), w|d) {
+    int h, ans = 0;
+    int hist1[21] = {}, hist2[21] = {};
+    REP(i, w) { scanf("%d", &h); hist1[h]++; ans += h; }
+    REP(i, d) { scanf("%d", &h); hist2[h]++; ans += h; }
+    REP(h, 21) { ans -= h * min(hist1[h], hist2[h]); }
+    printf("%d\n", ans);
+  }
 }

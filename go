@@ -1,2 +1,2 @@
 #!/bin/sh
-g++ -Wall -O2 $1.cpp -o $1 && ./$1 < $1.in$2
+g++ -std=c++0x -g -Wall -O2 $1.cpp && ./a.out < $1.in$2

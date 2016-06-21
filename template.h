@@ -20,5 +20,5 @@ using namespace std;
 template <typename T> inline int size(const T& x) { return x.size(); }
 
 int main() {
-  cin.tie(0); ios_base::sync_with_stdio(false);
+    cin.tie(0); ios_base::sync_with_stdio(false);
 }

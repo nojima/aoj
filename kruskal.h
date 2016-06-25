@@ -24,4 +24,3 @@ double kruskal(const Graph<Weight>& g) {
     }
     return total;
 }
-

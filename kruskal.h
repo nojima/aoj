@@ -1,18 +1,17 @@
-template <typename Weight>
+using Weight = int;
 struct Edge {
     int src, dst;
     Weight weight;
     Edge(int src, int dst, Weight weight): src(src), dst(dst), weight(weight) {}
-    bool operator<(const Edge<Weight>& other) const { return weight < other.weight; }
+    bool operator<(const Edge& other) const { return weight < other.weight; }
 };
-template <typename Weight> using Vertex = vector<Edge<Weight>>;
-template <typename Weight> using Graph = vector<Vertex<Weight>>;
+using Vertex = vector<Edge>;
+using Graph = vector<Vertex>;
 
-template <typename Weight>
-double kruskal(const Graph<Weight>& g) {
+double kruskal(const Graph& g) {
     UnionFind uf(g.size());
 
-    vector<Edge<Weight>> edges;
+    vector<Edge> edges;
     for (auto& v : g) edges.insert(edges.end(), v.begin(), v.end());
     sort(edges.begin(), edges.end());
 

@@ -12,7 +12,7 @@ void add_edge(Graph& graph, int src, int dst) {
 
 bool augment(const Graph& graph, vector<bool>& visited, vector<int>& match, int u) {
     if (u == -1) return true;
-    for (auto& e : graph) {
+    for (auto& e : graph[u]) {
         if (!visited[e.dst]) {
             visited[e.dst] = true;
             if (augment(graph, visited, match, match[e.dst])) {
@@ -31,7 +31,7 @@ bool augment(const Graph& graph, vector<bool>& visited, vector<int>& match, int 
 // Returns:
 //   最大マッチングの辺の数
 // Verified:
-//   AOJ 1163 (Cards)
+//   AOJ 1163 (Cards), AOJ 2251 (Merry Christmas)
 int bipartie_matching(const Graph& graph, int n_left) {
     vector<int> match(graph.size(), -1);
     int n_match = 0;

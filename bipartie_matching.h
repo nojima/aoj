@@ -1,15 +1,3 @@
-struct Edge {
-    int src, dst;
-    Edge(int src, int dst): src(src), dst(dst) {}
-};
-using Vertex = vector<Edge>;
-using Graph = vector<Vertex>;
-
-void add_edge(Graph& graph, int src, int dst) {
-    graph[src].emplace_back(src, dst);
-    graph[dst].emplace_back(dst, src);
-}
-
 bool augment(const Graph& graph, vector<bool>& visited, vector<int>& match, int u) {
     if (u == -1) return true;
     for (auto& e : graph[u]) {

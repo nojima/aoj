@@ -4,8 +4,7 @@ struct Edge {
     Edge* rev;
     Edge(int src, int dst, int capacity): src(src), dst(dst), capacity(capacity), flow(0), rev(nullptr) {}
 };
-using Vertex = deque<Edge>;
-using Graph = vector<Vertex>;
+using Graph = vector<vector<Edge>>;
 
 void add_edge(Graph& graph, int src, int dst, int capacity) {
     graph[src].emplace_back(src, dst, capacity);

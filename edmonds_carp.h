@@ -2,8 +2,7 @@ struct Edge {
     int src, dst, capacity;
     Edge(int src, int dst, int capacity): src(src), dst(dst), capacity(capacity) {}
 };
-using Vertex = vector<Edge>;
-using Graph = vector<Vertex>;
+using Graph = vector<vector<Edge>>;
 
 void add_edge(Graph& graph, int src, int dst, int capacity) {
     graph[src].emplace_back(src, dst, capacity);

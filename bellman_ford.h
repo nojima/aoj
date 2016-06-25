@@ -15,6 +15,6 @@ vector<Weight> bellman_ford(const Graph& graph, int source) {
             }
         }
         if (!updated) return dist;
-        if (i == graph.size()) assert(false);  // the graph has a negative cycle
+        if (i == int(graph.size())) assert(false);  // the graph has a negative cycle
     }
 }

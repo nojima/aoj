@@ -2,7 +2,6 @@ using Weight = int;
 struct Edge {
     int src, dst;
     Weight weight;
-    Edge(int src, int dst, Weight weight): src(src), dst(dst), weight(weight) {}
 };
 using Graph = vector<vector<Edge>>;
 

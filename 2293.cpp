@@ -8,18 +8,17 @@ using Weight = int;
 struct Edge {
     int src, dst, capacity;
     Weight weight;
-    Edge(int src, int dst, int capacity, Weight weight): src(src), dst(dst), capacity(capacity), weight(weight) {}
-    bool operator<(const Edge& other) const { return weight < other.weight; }
 };
 using Graph = vector<vector<Edge>>;
 
 void add_edge(Graph& graph, int src, int dst, int capacity, Weight weight) {
-    graph[src].emplace_back(src, dst, capacity, weight);
-    graph[dst].emplace_back(dst, src, 0, -weight);
+    graph[src].push_back((Edge){src, dst, capacity, weight});
+    graph[dst].push_back((Edge){dst, src, 0, -weight});
 }
 
+// Verified: AOJ 2293 (Dangerous Tower)
 Weight minimum_cost_flow(const Graph& graph, int source, int sink) {
-    static const Weight inf = numeric_limits<Weight>::max() / 3;
+    static const Weight inf = numeric_limits<Weight>::max() / 10;
     vector<vector<int>> flow(graph.size(), vector<int>(graph.size()));
 
     // calculate initial potential with Bellman Ford.
@@ -37,7 +36,7 @@ Weight minimum_cost_flow(const Graph& graph, int source, int sink) {
             }
         }
         if (!updated) break;
-        if (i == int(graph.size())) assert(false);  // the graph has a negative cycle
+        if (i == (int)graph.size()) assert(false);  // the graph has a negative cycle
     }
 
     Weight total = 0;

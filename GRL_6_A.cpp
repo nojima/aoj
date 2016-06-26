@@ -6,13 +6,12 @@ using namespace std;
 
 struct Edge {
     int src, dst, capacity;
-    Edge(int src, int dst, int capacity): src(src), dst(dst), capacity(capacity) {}
 };
 using Graph = vector<vector<Edge>>;
 
 void add_edge(Graph& graph, int src, int dst, int capacity) {
-    graph[src].emplace_back(src, dst, capacity);
-    graph[dst].emplace_back(dst, src, 0);
+    graph[src].push_back((Edge){src, dst, capacity});
+    graph[dst].push_back((Edge){dst, src, 0});
 }
 
 struct Augment {
@@ -21,8 +20,6 @@ struct Augment {
     vector<vector<int>>& flow;
     vector<int>& progress;
     int sink;
-    Augment(const Graph& graph, const vector<int>& level, vector<vector<int>>& flow, vector<int>& progress, int sink):
-        graph(graph), level(level), flow(flow), progress(progress), sink(sink) {}
     int operator()(int u, int f) const {
         if (u == sink) return f;
         int total = 0, i = progress[u];
@@ -64,7 +61,7 @@ int dinic(const Graph& graph, int source, int sink) {
 
         // push blocking flow
         vector<int> progress(graph.size());
-        total += Augment(graph, level, flow, progress, sink)(source, INT_MAX);
+        total += (Augment){graph, level, flow, progress, sink}(source, INT_MAX);
     }
 }
 

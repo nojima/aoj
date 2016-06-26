@@ -14,7 +14,7 @@ void add_edge(Graph& graph, int src, int dst, int capacity, Weight weight) {
 
 // Verified: AOJ 2293 (Dangerous Tower)
 Weight minimum_cost_flow(const Graph& graph, int source, int sink) {
-    static const Weight inf = numeric_limits<Weight>::max() / 3;
+    static const Weight inf = numeric_limits<Weight>::max() / 10;
     vector<vector<int>> flow(graph.size(), vector<int>(graph.size()));
 
     // calculate initial potential with Bellman Ford.

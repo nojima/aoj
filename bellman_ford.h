@@ -1,6 +1,6 @@
 // Not verified.
 vector<Weight> bellman_ford(const Graph& graph, int source) {
-    static const Weight inf = numeric_limits<Weight>::max() / 3;
+    static const Weight inf = numeric_limits<Weight>::max() / 10;
     vector<Weight> dist(graph.size(), inf);
     dist[source] = 0;
     for (int i = 0; ; ++i) {

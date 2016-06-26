@@ -1,6 +1,6 @@
-// Verified: AOJ 2251 (Merry Christmas)
+// Verified: AOJ 2251 (Merry Christmas), AOJ 2200 (Mr. Rito Post Office)
 vector<vector<Weight>> warshall_floyd(Graph graph) {
-    static const Weight inf = numeric_limits<Weight>::max() / 3;
+    static const Weight inf = numeric_limits<Weight>::max() / 10;
     vector<vector<Weight>> dist(graph.size(), vector<Weight>(graph.size(), inf));
     REP(u, graph.size()) dist[u][u] = 0;
     REP(u, graph.size()) for (auto& e : graph[u]) dist[e.src][e.dst] = e.weight;

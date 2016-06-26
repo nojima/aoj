@@ -9,27 +9,34 @@ void add_edge(Graph& graph, int src, int dst, int capacity) {
     graph[dst].emplace_back(dst, src, 0);
 }
 
-int augment(const Graph& graph, const vector<int>& level,
-            vector<vector<int>>& flow, vector<int>& progress,
-            int sink, int u, int f) {
-    if (u == sink) return f;
-    int total = 0, i = progress[u];
-    for (; i < (int)graph[u].size(); ++i) {
-        auto& e = graph[u][i];
-        int residue = e.capacity - flow[e.src][e.dst];
-        if (residue > 0 && level[e.src] < level[e.dst]) {
-            int aug = augment(graph, level, flow, progress, sink, e.dst, min(f - total, residue));
-            flow[e.src][e.dst] += aug;
-            flow[e.dst][e.src] -= aug;
-            total += aug;
-            if (total == f) break;
+struct Augment {
+    const Graph graph;
+    const vector<int>& level;
+    vector<vector<int>>& flow;
+    vector<int>& progress;
+    int sink;
+    Augment(const Graph& graph, const vector<int>& level, vector<vector<int>>& flow, vector<int>& progress, int sink):
+        graph(graph), level(level), flow(flow), progress(progress), sink(sink) {}
+    int operator()(int u, int f) const {
+        if (u == sink) return f;
+        int total = 0, i = progress[u];
+        for (; i < (int)graph[u].size(); ++i) {
+            auto& e = graph[u][i];
+            int residue = e.capacity - flow[e.src][e.dst];
+            if (residue > 0 && level[e.src] < level[e.dst]) {
+                int aug = (*this)(e.dst, min(f - total, residue));
+                flow[e.src][e.dst] += aug;
+                flow[e.dst][e.src] -= aug;
+                total += aug;
+                if (total == f) break;
+            }
         }
+        progress[u] = i;
+        return total;
     }
-    progress[u] = i;
-    return total;
-}
+};
 
-// Verified: AOJ GRL_6 (Maximum Flow)
+// Verified: AOJ GRL_6_A (Maximum Flow)
 int dinic(const Graph& graph, int source, int sink) {
     vector<vector<int>> flow(graph.size(), vector<int>(graph.size()));
     int total = 0;
@@ -51,6 +58,6 @@ int dinic(const Graph& graph, int source, int sink) {
 
         // push blocking flow
         vector<int> progress(graph.size());
-        total += augment(graph, level, flow, progress, sink, source, INT_MAX);
+        total += Augment(graph, level, flow, progress, sink)(source, INT_MAX);
     }
 }

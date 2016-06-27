@@ -1,10 +1,15 @@
-// ガウスの消去法で連立一次方程式の解を求める。
+// ガウスの消去法で以下の形のn変数連立一次方程式の解を求める。
+//   m[0][0]*x[0]   + m[0][1]*x[1]   + ... + m[n-1][0]*x[n-1]   = m[0][n]
+//   m[1][0]*x[0]   + m[1][1]*x[1]   + ... + m[n-1][1]*x[n-1]   = m[1][n]
+//   ...
+//   m[n-1][0]*x[0] + m[n-1][1]*x[1] + ... + m[n-1][n-1]*x[n-1] = m[n-1][n]
 // Arguments:
-//   matrix: (n, n+1)-行列。この関数はこの行列を破壊的に変更する。
+//   matrix: (n, n+1)-行列。上の説明のmに相当する。
 // Returns:
-//   vector<double>: 解となるベクトル。解が複数あったり存在しない場合は空のvectorを返す。
-// Verified: AOJ 2315 (Shadow Witch)
-vector<double> gaussian_elimination(vector<vector<double>>& matrix) {
+//   解となるn次ベクトル。解が複数あったり存在しない場合は空のvectorを返す。
+// Verified:
+//   AOJ 2315 (Shadow Witch)
+vector<double> gaussian_elimination(vector<vector<double>> matrix) {
     static const double eps = 1e-10;
     int n = matrix.size();
     assert((int)matrix[0].size() == n+1);

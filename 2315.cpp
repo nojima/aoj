@@ -33,6 +33,27 @@ vector<vector<double>> matrix_power(vector<vector<double>> matrix, unsigned k) {
     return result;
 }
 
+// 定数係数の線形漸化式のn項目を求める。
+// A[i] = coeff[0] + coeff[1]*A[i-1] + coeff[2]*A[i-2] + ... + coeff[k]*A[i-k]
+// Arguments:
+//   coeff: 係数の列。0番目の値は定数項。
+//   init: 数列の初期値。A[0]からa[k-1]をこの順番で入れる。
+//   n: 求める項
+// Returns:
+//   A[n] の値を返す。
+double constat_recursive_sequence(const vector<double>& coeff, const vector<double>& init, int n) {
+    int k = coeff.size()-1;
+    vector<vector<double>> matrix(k+1, vector<double>(k+1));
+    matrix[0][k] = matrix[k][k] = coeff[0];
+    REP(i, k) matrix[0][i] = coeff[i+1];
+    REP(i, k-1) matrix[i+1][i] = 1;
+    matrix = matrix_power(matrix, n-k+1);
+    vector<double> v0(k+1);
+    v0[k] = 1;
+    REP(i, k) v0[i] = init[k-i-1];
+    return matrix_vector_product(matrix, v0)[0];
+}
+
 // ガウスの消去法で連立一次方程式の解を求める。
 // Arguments:
 //   matrix: (n, n+1)-行列。この関数はこの行列を破壊的に変更する。
@@ -115,15 +136,10 @@ int main() {
         if (S <= L) {
             print_float(solution[S]);
         } else {
-            vector<vector<double>> m(L+1, vector<double>(L+1));
-            m[0][L] = m[L][L] = 1;
-            REP(v, L) m[0][v] = prob[K][v+1];
-            FOR(i, 1, L) m[i][i-1] = 1;
-            m = matrix_power(m, S-L);
-            solution[0] = 1;
-            reverse(solution.begin(), solution.end());
-            solution = matrix_vector_product(m, solution);
-            print_float(solution[0]);
+            vector<double> coeff(L+1);
+            coeff[0] = 1;
+            REP(i, L) coeff[i+1] = prob[K][i+1];
+            print_float(constat_recursive_sequence(coeff, solution, S));
         }
     }
 }

@@ -1,174 +1,129 @@
-#include <cmath>
-#include <cstdio>
-#include <cassert>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-const long double EPS = 1e-9;
-typedef long long ll;
-#define REP(i, n) for (int i = 0; i < (int)(n); ++i)
-#define REPEQ(i, n) for (int i = 0; i <= (int)(n); ++i)
-#define DOWN(i, n) for (int i = (n)-1; i >= 0; --i)
-#define FOR(i, a, b) for (int i = (a); i < (int)(b); ++i)
-#define FOREQ(i, a, b) for (int i = (a); i <= (int)(b); ++i)
+#define FOR(i, a, b) for (int i = (a); i < int(b); ++i)
+#define REP(i, n) FOR(i, 0, n)
 
-struct Matrix {
-  int n, m;
-  long double** a;
-
-  Matrix(int n, int m) { Create(n, m); }
-  explicit Matrix(int n) { Create(1, n); }
-  Matrix(const Matrix& mat) { Create(mat.n, mat.m); CopyFrom(mat); }
-  virtual ~Matrix() { Release(); }
-
-  void Create(int n, int m) {
-    this->n = n; this->m = m;
-    a = (long double**)calloc(n, sizeof(*a));
-    REP(i, n) { a[i] = (long double*)calloc(m, sizeof(**a)); }
-  }
-
-  void Release() {
-    REP(i, n) { free(a[i]); }
-    free(a);
-  }
-
-  void CopyFrom(const Matrix& rhs) {
-    assert(n == rhs.n && m == rhs.m);
-    REP(i, n) REP(j, m) { a[i][j] = rhs[i][j]; }
-  }
-
-  void Swap(Matrix& rhs) {
-    swap(n, rhs.n); swap(m, rhs.m); swap(a, rhs.a);
-  }
-
-  long double* operator[](int i) { return a[i]; }
-  const long double* operator[](int i) const { return a[i]; }
-
-  Matrix& operator+=(const Matrix& rhs) {
-    assert(n == rhs.n && m == rhs.m);
-    REP(i, n) REP(j, m) { a[i][j] += rhs[i][j]; }
-    return *this;
-  }
-
-  const Matrix& operator+(const Matrix& rhs) const {
-    return Matrix(*this) *= rhs;
-  }
-
-  Matrix& operator-=(const Matrix& rhs) {
-    assert(n == rhs.n && m == rhs.m);
-    REP(i, n) REP(j, m) { a[i][j] -= rhs[i][j]; }
-  }
-
-  const Matrix& operator-(const Matrix& rhs) const {
-    return Matrix(*this) -= rhs;
-  }
-
-  Matrix& operator*=(const Matrix& rhs) {
-    if (m == rhs.n) {   // matrix * matrix
-      Matrix ret(n, rhs.m);
-      REP(i, n) REP(j, rhs.m) REP(k, m) { ret[i][j] += a[i][k] * rhs[k][j]; }
-      Swap(ret);
-    } else if (rhs.n == 1 && m == rhs.m) {      // matrix * vector
-      Matrix ret(1, n);
-      REP(i, n) REP(k, m) { ret[0][i] += a[i][k] * rhs[0][k]; }
-      Swap(ret);
-    } else {
-      assert(false);
-    }
-    return *this;
-  }
-
-  Matrix operator*(const Matrix& rhs) const {
-    return Matrix(*this) *= rhs;
-  }
-
-  Matrix Pow(int k) const {
-    assert(n == m);
-    Matrix ret = Identity(n);
-    Matrix temp = *this;
-    while (k) {
-      if (k & 1) { ret *= temp; }
-      temp *= temp;
-      k >>= 1;
-    }
-    return ret;
-  }
-
-  bool Solve(Matrix& vec) {
-    assert(vec.n == 1 && n == m && n == vec.m);
-    int pivot[n];
-    long double* b = vec.a[0];
-    REP(i, n) {
-      pivot[i] = i;
-      FOR(j, i+1, n) {
-        if (fabs(a[j][i]) > fabs(a[pivot[i]][i])) { pivot[i] = j; }
-      }
-      swap(a[i], a[pivot[i]]);
-      swap(b[i], b[pivot[i]]);
-      if (fabs(a[i][i]) < EPS) { return false; }
-      b[i] /= a[i][i];
-      FOR(j, i+1, n) { a[i][j] /= a[i][i]; }
-      FOR(j, i+1, n) { b[j] -= b[i] * a[j][i]; }
-      FOR(j, i+1, n) FOR(k, i+1, n) { a[j][k] -= a[i][k] * a[j][i]; }
-    }
-    DOWN(i, n) REP(j, i) { b[j] -= a[j][i] * b[i]; }
-    DOWN(i, n) { swap(b[i], b[pivot[i]]); }
-    return true;
-  }
-
-  static Matrix Identity(int n) {
-    Matrix ret(n, n);
-    REP(i, n) { ret[i][i] = 1.0; }
-    return ret;
-  }
-};
-
-int S, N, K;
-long double p[11][110];
-long double E[110];
-
-bool Near() {
-  Matrix A = Matrix::Identity(N*K+1);
-  FOREQ(x, 1, N*K) FOREQ(d, K, N*K) { A[x][abs(x - d)] -= p[K][d]; }
-  Matrix b(N*K+1);
-  FOREQ(i, 1, N*K) { b[0][i] = 1.0; }
-  bool f = A.Solve(b);
-  REPEQ(x, N*K) { E[x] = b[0][x]; }
-  return f;
+vector<vector<double>> matrix_product(const vector<vector<double>>& a, const vector<vector<double>>& b) {
+    int ra = a.size(), ca = a[0].size(), rb = b.size(), cb = b[0].size();
+    assert(ca == rb);
+    vector<vector<double>> matrix(ra, vector<double>(cb));
+    REP(r, ra) REP(c, cb) REP(k, ca)
+        matrix[r][c] += a[r][k] * b[k][c];
+    return matrix;
 }
 
-void Far() {
-  if (S > N*K) {
-    Matrix A(N*K+1, N*K+1);
-    A[0][N*K] = A[N*K][N*K] = 1;
-    REP(i, N*K) { A[0][i] = p[K][i+1]; }
-    REP(i, N*K-1) { A[i+1][i] = 1; }
-    Matrix b(N*K+1);
-    b[0][N*K] = 1;
-    REP(i, N*K) { b[0][i] = E[i+1]; }
-    Matrix C = A.Pow(S-N*K);
-    Matrix d = C * b;
-    printf("%.12Lf\n", d[0][K-1]+EPS);
-  } else {
-    printf("%.12Lf\n", E[S]+EPS);
-  }
+vector<double> matrix_vector_product(const vector<vector<double>>& a, const vector<double>& b) {
+    int nr = a.size(), nc = a[0].size();
+    assert(nc == (int)b.size());
+    vector<double> result(nr);
+    REP(r, nr) REP(k, nc) result[r] += a[r][k] * b[k];
+    return result;
+}
+
+vector<vector<double>> matrix_power(vector<vector<double>> matrix, unsigned k) {
+    int n = matrix.size();
+    vector<vector<double>> result(n, vector<double>(n));
+    REP(i, n) result[i][i] = 1;
+    for (; k; k >>= 1) {
+        if (k & 1)
+            result = matrix_product(result, matrix);
+        matrix = matrix_product(matrix, matrix);
+    }
+    return result;
+}
+
+// ガウスの消去法で連立一次方程式の解を求める。
+// Arguments:
+//   matrix: (n, n+1)-行列。この関数はこの行列を破壊的に変更する。
+// Returns:
+//   vector<double>: 解となるベクトル。解が複数あったり存在しない場合は空のvectorを返す。
+vector<double> gaussian_elimination(vector<vector<double>>& matrix) {
+    static const double eps = 1e-10;
+    int n = matrix.size();
+    assert((int)matrix[0].size() == n+1);
+    vector<int> column(n);
+    REP(i, n) column[i] = i;
+
+    // forward
+    REP(i, n) {
+        // pivot
+        int pivot_r = i, pivot_c = i;
+        FOR(r, i, n) FOR(c, i, n)
+            if (abs(matrix[r][c]) > abs(matrix[pivot_r][pivot_c]))
+                pivot_r = r, pivot_c = c;
+        swap(matrix[pivot_r], matrix[i]);
+        swap(column[pivot_c], column[i]);
+        REP(r, n) swap(matrix[r][pivot_c], matrix[r][i]);
+        if (abs(matrix[i][i]) < eps)
+            return vector<double>();    // no solutions or many solutions
+        // reduction
+        double t = 1.0 / matrix[i][i];
+        FOR(c, i, n+1) matrix[i][c] *= t;
+        FOR(r, i+1, n) {
+            double s = matrix[r][i];
+            FOR(c, i, n+1) matrix[r][c] -= s * matrix[i][c];
+        }
+    }
+
+    // backward
+    vector<double> answer(n);
+    for (int i = n-1; i >= 0; --i) {
+        REP(r, i) matrix[r][n] -= matrix[r][i] * matrix[i][n];
+        answer[column[i]] = matrix[i][n];
+    }
+    return answer;
+}
+
+void print_float(double x, int precision=10) {
+    cout.setf(ios::fixed);
+    cout.precision(precision);
+    cout << x << '\n';
 }
 
 int main() {
-  scanf("%d%d%d", &S, &N, &K);
-  S = abs(S);
+    cin.tie(0); ios_base::sync_with_stdio(false);
 
-  if (N == 1) {
-    if (S % K == 0) { printf("%d\n", S / K); }
-    else { puts("-1"); }
-    return 0;
-  }
+    int S, N, K;
+    while (cin >> S >> N >> K) {
+        int L = N*K;
+        vector<vector<double>> prob(K+1, vector<double>(L+1));
+        FOR(v, 1, N+1) prob[1][v] = 1.0 / N;
+        FOR(k, 2, K+1) REP(v, L+1) {
+            FOR(i, 1, N+1) if (v-i > 0)
+                prob[k][v] += prob[k-1][v-i] / N;
+        }
+        S = abs(S);
 
-  p[0][0] = 1;
-  FOREQ(k, 1, K) FOREQ(d, 1, N*K) FOREQ(n, 1, N) {
-    if (d >= n) { p[k][d] += p[k-1][d-n] / N; }
-  }
+        if (N == 1) {
+            if (S % K == 0)
+                cout << S/K << endl;
+            else
+                cout << -1 << endl;
+            continue;
+        }
 
-  if (Near()) { Far(); }
-  else { puts("-1"); }
+        vector<vector<double>> matrix(L+1, vector<double>(L+2));
+        matrix[0][0] = -1;
+        FOR(p, 1, L+1) {
+            matrix[p][p] = -1;
+            matrix[p][L+1] = -1;
+            FOR(i, 1, L+1) matrix[p][abs(p-i)] += prob[K][i];
+        }
+        vector<double> solution = gaussian_elimination(matrix);
+        assert(!solution.empty());
+        if (S <= L) {
+            print_float(solution[S]);
+        } else {
+            vector<vector<double>> m(L+1, vector<double>(L+1));
+            m[0][L] = m[L][L] = 1;
+            REP(v, L) m[0][v] = prob[K][v+1];
+            FOR(i, 1, L) m[i][i-1] = 1;
+            m = matrix_power(m, S-L);
+            solution[0] = 1;
+            reverse(solution.begin(), solution.end());
+            solution = matrix_vector_product(m, solution);
+            print_float(solution[0]);
+        }
+    }
 }

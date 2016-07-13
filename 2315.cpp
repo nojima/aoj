@@ -33,8 +33,8 @@ vector<vector<double>> matrix_power(vector<vector<double>> matrix, unsigned k) {
     return result;
 }
 
-// 定数係数の線形漸化式のn項目を求める。
-// A[i] = coeff[0] + coeff[1]*A[i-1] + coeff[2]*A[i-2] + ... + coeff[k]*A[i-k]
+// 以下の形の定数係数線形漸化式のn項目を求める。
+//   A[i] = coeff[0] + coeff[1]*A[i-1] + coeff[2]*A[i-2] + ... + coeff[k]*A[i-k]
 // Arguments:
 //   coeff: 係数の列。0番目の値は定数項。
 //   init: 数列の初期値。A[0]からa[k-1]をこの順番で入れる。
